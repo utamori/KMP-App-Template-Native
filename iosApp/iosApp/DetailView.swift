@@ -2,24 +2,44 @@ import Foundation
 import SwiftUI
 import Shared
 import KMPNativeCoroutinesAsync
-import KMPObservableViewModelSwiftUI
 
 struct DetailView: View {
-    @StateViewModel
-    var viewModel = DetailViewModel(
-        museumRepository: KoinDependencies().museumRepository
-    )
+    @StateObject private var viewModelStoreOwner = IosViewModelStoreOwner()
+
+    @State private var museumObject: MuseumObject?
 
     let objectId: Int32
 
+    private var viewModel: DetailViewModel {
+        viewModelStoreOwner.viewModel {
+            DetailViewModel(museumRepository: KoinDependencies().museumRepository)
+        }
+    }
+
     var body: some View {
-        VStack {
-            if let obj = viewModel.museumObject {
+        // Android: AnimatedContent(obj != null)
+        ZStack {
+            if let obj = museumObject {
                 ObjectDetails(obj: obj)
+            } else {
+                EmptyScreenContent()
             }
         }
         .task {
             viewModel.setId(objectId: objectId)
+            await observeMuseumObject()
+        }
+    }
+
+    @MainActor
+    private func observeMuseumObject() async {
+        do {
+            let stream = asyncSequence(for: viewModel.museumObjectFlow)
+            for try await newObject in stream {
+                self.museumObject = newObject
+            }
+        } catch {
+            print("Failed observing museum object: \(error)")
         }
     }
 }
@@ -28,28 +48,33 @@ struct ObjectDetails: View {
     var obj: MuseumObject
 
     var body: some View {
+        // Android: Column(Modifier.verticalScroll(rememberScrollState()).padding(paddingValues))
         ScrollView {
-
-            VStack {
+            VStack(alignment: .leading, spacing: 0) {
+                // Android: AsyncImage with contentScale = ContentScale.FillWidth,
+                //          Modifier.fillMaxWidth().background(Color.LightGray)
                 AsyncImage(url: URL(string: obj.primaryImageSmall)) { phase in
                     switch phase {
-                    case .empty:
-                        ProgressView()
                     case .success(let image):
                         image
                             .resizable()
-                            .scaledToFill()
-                            .clipped()
-                    case .failure:
-                        EmptyView()
-                    @unknown default:
-                        EmptyView()
+                            .scaledToFit()
+                    default:
+                        Color(white: 0.9)
+                            .frame(height: 300)
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .background(Color(white: 0.9))
 
-                VStack(alignment: .leading, spacing: 6) {
+                // Android: Column(Modifier.padding(12.dp))
+                VStack(alignment: .leading, spacing: 0) {
+                    // Android: Text(obj.title, style = MaterialTheme.typography.headlineMedium)
                     Text(obj.title)
                         .font(.title)
+
+                    // Android: Spacer(Modifier.height(6.dp))
+                    Spacer().frame(height: 6)
 
                     LabeledInfo(label: "Artist", data: obj.artistDisplayName)
                     LabeledInfo(label: "Date", data: obj.objectDate)
@@ -59,7 +84,7 @@ struct ObjectDetails: View {
                     LabeledInfo(label: "Repository", data: obj.repository)
                     LabeledInfo(label: "Credits", data: obj.creditLine)
                 }
-                .padding(16)
+                .padding(12)
             }
         }
     }
@@ -70,7 +95,14 @@ struct LabeledInfo: View {
     var data: String
 
     var body: some View {
-        Spacer()
-        Text("**\(label):** \(data)")
+        // Android: Column(modifier.padding(vertical = 4.dp))
+        VStack(alignment: .leading) {
+            // Android: Spacer(Modifier.height(6.dp))
+            Spacer().frame(height: 6)
+
+            // Android: Text with SpanStyle(fontWeight = FontWeight.Bold) for label
+            Text("**\(label):** \(data)")
+        }
+        .padding(.vertical, 4)
     }
 }

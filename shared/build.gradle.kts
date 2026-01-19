@@ -27,6 +27,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
+            export(libs.androidx.lifecycle.viewmodel)
         }
     }
 
@@ -42,13 +43,12 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.koin.core)
-            api(libs.kmp.observable.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel)
         }
 
-        // Required by KMM-ViewModel
+        // Required for iOS interop
         all {
             languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
-            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
     }
 }
