@@ -40,7 +40,9 @@ struct ObjectDetails: View {
                             .resizable()
                             .scaledToFill()
                             .clipped()
-                    default:
+                    case .failure:
+                        EmptyView()
+                    @unknown default:
                         EmptyView()
                     }
                 }

@@ -58,6 +58,10 @@ struct ObjectFrame: View {
                     EmptyView()
                         .frame(maxWidth: .infinity)
                         .aspectRatio(1, contentMode: .fit)
+                @unknown default:
+                    EmptyView()
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1, contentMode: .fit)
                 }
             }
             .aspectRatio(1, contentMode: .fit)
