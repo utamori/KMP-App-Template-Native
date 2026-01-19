@@ -11,9 +11,7 @@ struct DetailView: View {
     let objectId: Int32
 
     private var viewModel: DetailViewModel {
-        viewModelStoreOwner.viewModel {
-            DetailViewModel(museumRepository: KoinDependencies().museumRepository)
-        }
+        viewModelStoreOwner.viewModel(factory: KoinDependencies().detailViewModelFactory)
     }
 
     var body: some View {

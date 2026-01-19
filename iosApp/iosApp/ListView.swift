@@ -12,9 +12,7 @@ struct ListView: View {
     ]
 
     private var viewModel: ListViewModel {
-        viewModelStoreOwner.viewModel {
-            ListViewModel(museumRepository: KoinDependencies().museumRepository)
-        }
+        viewModelStoreOwner.viewModel(factory: KoinDependencies().listViewModelFactory)
     }
 
     var body: some View {

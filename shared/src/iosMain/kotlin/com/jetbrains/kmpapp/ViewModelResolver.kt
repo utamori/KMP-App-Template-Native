@@ -1,21 +1,28 @@
 package com.jetbrains.kmpapp
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ObjCClass
 
-@Suppress("UNCHECKED_CAST")
-fun <VM : ViewModel> ViewModelStore.resolveViewModel(
-    objCClass: Any,
-    factory: () -> VM
-): VM {
-    val className = objCClass.toString()
-    val key = "androidx.lifecycle.ViewModelProvider.DefaultKey:$className"
+@OptIn(BetaInteropApi::class)
+@Throws(IllegalArgumentException::class)
+fun ViewModelStore.resolveViewModel(
+    modelClass: ObjCClass,
+    factory: ViewModelProvider.Factory,
+    key: String? = null,
+    extras: CreationExtras = CreationExtras.Empty,
+): ViewModel {
+    val className = modelClass.toString()
+    val resolvedKey = key ?: "androidx.lifecycle.ViewModelProvider.DefaultKey:$className"
 
-    var viewModel = get(key)
+    var viewModel = get(resolvedKey)
     if (viewModel == null) {
-        viewModel = factory()
-        put(key, viewModel)
+        viewModel = factory.create(ViewModel::class, extras)
+        put(resolvedKey, viewModel)
     }
 
-    return viewModel as VM
+    return viewModel
 }
