@@ -17,7 +17,6 @@ struct DetailView: View {
     }
 
     var body: some View {
-        // Android: AnimatedContent(obj != null)
         ZStack {
             if let obj = museumObject {
                 ObjectDetails(obj: obj)
@@ -48,11 +47,8 @@ struct ObjectDetails: View {
     var obj: MuseumObject
 
     var body: some View {
-        // Android: Column(Modifier.verticalScroll(rememberScrollState()).padding(paddingValues))
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // Android: AsyncImage with contentScale = ContentScale.FillWidth,
-                //          Modifier.fillMaxWidth().background(Color.LightGray)
                 AsyncImage(url: URL(string: obj.primaryImageSmall)) { phase in
                     switch phase {
                     case .success(let image):
@@ -67,13 +63,10 @@ struct ObjectDetails: View {
                 .frame(maxWidth: .infinity)
                 .background(Color(white: 0.9))
 
-                // Android: Column(Modifier.padding(12.dp))
                 VStack(alignment: .leading, spacing: 0) {
-                    // Android: Text(obj.title, style = MaterialTheme.typography.headlineMedium)
                     Text(obj.title)
                         .font(.title)
 
-                    // Android: Spacer(Modifier.height(6.dp))
                     Spacer().frame(height: 6)
 
                     LabeledInfo(label: "Artist", data: obj.artistDisplayName)
@@ -95,12 +88,9 @@ struct LabeledInfo: View {
     var data: String
 
     var body: some View {
-        // Android: Column(modifier.padding(vertical = 4.dp))
         VStack(alignment: .leading) {
-            // Android: Spacer(Modifier.height(6.dp))
             Spacer().frame(height: 6)
 
-            // Android: Text with SpanStyle(fontWeight = FontWeight.Bold) for label
             Text("**\(label):** \(data)")
         }
         .padding(.vertical, 4)

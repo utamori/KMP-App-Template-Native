@@ -7,7 +7,6 @@ struct ListView: View {
 
     @State private var objects: [MuseumObject] = []
 
-    // Android: GridCells.Adaptive(180.dp)
     let columns = [
         GridItem(.adaptive(minimum: 180), alignment: .top)
     ]
@@ -22,7 +21,6 @@ struct ListView: View {
         ZStack {
             if !objects.isEmpty {
                 NavigationStack {
-                    // Android: LazyVerticalGrid with contentPadding = WindowInsets.safeDrawing.asPaddingValues()
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 0) {
                             ForEach(objects, id: \.self) { item in
@@ -59,7 +57,6 @@ struct ListView: View {
     }
 }
 
-// Android: EmptyScreenContent(Modifier.fillMaxSize())
 struct EmptyScreenContent: View {
     var body: some View {
         Text("No data available")
@@ -71,10 +68,7 @@ struct ObjectFrame: View {
     let obj: MuseumObject
 
     var body: some View {
-        // Android: Column(modifier.padding(8.dp).clickable { onClick() })
         VStack(alignment: .leading) {
-            // Android: AsyncImage with contentScale = ContentScale.Crop,
-            //          Modifier.fillMaxWidth().aspectRatio(1f).background(Color.LightGray)
             Color(white: 0.9)
                 .aspectRatio(1, contentMode: .fit)
                 .overlay(
@@ -91,18 +85,14 @@ struct ObjectFrame: View {
                 )
                 .clipped()
 
-            // Android: Spacer(Modifier.height(2.dp))
             Spacer().frame(height: 2)
 
-            // Android: Text(obj.title, style = MaterialTheme.typography.titleMedium)
             Text(obj.title)
                 .font(.headline)
 
-            // Android: Text(obj.artistDisplayName, style = MaterialTheme.typography.bodyMedium)
             Text(obj.artistDisplayName)
                 .font(.subheadline)
 
-            // Android: Text(obj.objectDate, style = MaterialTheme.typography.bodySmall)
             Text(obj.objectDate)
                 .font(.caption)
         }
